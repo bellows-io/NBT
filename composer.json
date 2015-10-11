@@ -1,0 +1,20 @@
+{
+	"name"        : "bellows/nbt",
+	"description" : "NBT file parser / builder",
+	"license"     : "MIT",
+	"require-dev" : {
+		"bellows/debug"    : "dev-master"
+	},
+	"minimum-stability":"dev",
+	"repositories": [
+		{
+			"type": "vcs",
+			"url" : "git@github.com:bellows-io/debug.git"
+		}
+	],
+	"autoload"    : {
+		"psr-4": {
+			"Nbt\\": "src/"
+		}
+	}
+}
