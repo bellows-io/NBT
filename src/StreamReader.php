@@ -3,6 +3,8 @@
 namespace Nbt;
 
 use Nbt\Tag\TagType;
+use Nbt\Tag\AbstractCollectionTag;
+use Nbt\Tag\CompoundTag;
 
 class StreamReader {
 
@@ -24,89 +26,83 @@ class StreamReader {
 		if (! is_resource($file)) {
 			throw new \Exception("Input is not a resource");
 		}
-		$out = [];
+		$out = new \Nbt\Tag\RootTag();
 		$this->readIntoNode($file, $out);
 		return $out;
 	}
 
-	protected function readIntoNode($file, &$node) {
+	protected function readIntoNode($file, CompoundTag &$tag) {
 		if (feof($file)) {
 			return false;
 		}
-		$tagType = $this->readType($file, TagType::TAG_BYTE);
+		$tagType = $this->readTag($file, TagType::TAG_BYTE)->getValue();
 		if ($tagType == TagType::TAG_END) {
 			return false;
 		}
-		$tagName = $this->readType($file, TagType::TAG_STRING);
-		$tagValue = $this->readType($file, $tagType);
+		$tagName = $this->readTag($file, TagType::TAG_STRING)->getValue();
+		$childTag = $this->readTag($file, $tagType);
 
-		$node[] = [
-			'type' => $tagType,
-			'name' => $tagName,
-			'value' => $tagValue
-		];
+		$tag->set($tagName, $childTag);
 
 		return true;
 	}
 
-	protected function readType($file, $tagType) {
+	protected function readTag($file, $tagType) {
 		switch ($tagType) {
 			case TagType::TAG_BYTE:
-				return $this->unpackNBytes($file, 1, "c");
+				return new \Nbt\Tag\ByteTag($this->unpackNBytes($file, 1, "c"));
 			case TagType::TAG_SHORT:
 				$unsigned = $this->unpackNBytes($file, 2, "n");
 				if ($unsigned >= pow(2, 15)) { // convert to signed
-					return $unsigned - pow(2, 16);
+					$unsigned -= pow(2, 16);
 				}
-				return $unsigned;
+				return new \Nbt\Tag\ShortTag($unsigned);
 			case TagType::TAG_INT:
 				$unsigned = $this->unpackNBytes($file, 4, "N");
 				if ($unsigned >= pow(2, 31)) { // conert to signed
-					return $unsigned - pow(2, 32);
+					$unsigned = $unsigned - pow(2, 32);
 				}
-				return $unsigned;
+				return new \Nbt\Tag\IntTag($unsigned);
 			case TagType::TAG_LONG:
 				$first  = $this->unpackNBytes($file, 4, "N");
 				$second = $this->unpackNBytes($file, 4, "N");
-				return ($first << 32) + $second;
+				return new \Nbt\Tag\LongTag(($first << 32) + $second);
 			case TagType::TAG_FLOAT:
 				if ($this->endianness == self::BIG_ENDIAN) {
-					return $this->unpackNBytes($file, 4, 'f');
+					return new \Nbt\Tag\FloatTag($this->unpackNBytes($file, 4, 'f'));
 				}
-				return $this->unpackNBytes($file, 4, 'f', true);
+				return new \Nbt\Tag\FloatTag($this->unpackNBytes($file, 4, 'f', true));
 			case TagType::TAG_DOUBLE:
 				if ($this->endianness == self::BIG_ENDIAN) {
-					return $this->unpackNBytes($file, 8, 'd');
+					return new \Nbt\Tag\DoubleTag($this->unpackNBytes($file, 8, 'd'));
 				}
-				return $this->unpackNBytes($file, 8, 'd', true);
+				return new \Nbt\Tag\DoubleTag($this->unpackNBytes($file, 8, 'd', true));
 			case TagType::TAG_BYTE_ARRAY:
-				$length = $this->readType($file, TagType::TAG_INT);
-				$out = [];
+				$length = $this->readTag($file, TagType::TAG_INT)->getValue();
+				$out = new \Nbt\Tag\ByteArrayTag();
 				for ($i = 0; $i < $length; $i++) {
-					$out[] = $this->readType($file, TagType::TAG_BYTE);
+					$out->push($this->readTag($file, TagType::TAG_BYTE));
 				}
 				return $out;
 			case TagType::TAG_STRING:
-				if (!($length = $this->readType($file, TagType::TAG_SHORT))) {
-					return "";
+				if (!($length = $this->readTag($file, TagType::TAG_SHORT)->getValue())) {
+					return new \Nbt\Tag\StringTag("");
 				}
-				return utf8_decode(fread($file, $length));
+				return new \Nbt\Tag\StringTag(utf8_decode(fread($file, $length)));
 			case TagType::TAG_LIST:
-				$type   = $this->readType($file, TagType::TAG_BYTE);
-				$length = $this->readType($file, TagType::TAG_INT);
-				$out = [
-					'type' => $type,
-					'value' => []
-				];
+				$type   = $this->readTag($file, TagType::TAG_BYTE)->getValue();
+				$length = $this->readTag($file, TagType::TAG_INT)->getValue();
+
+				$out = new \Nbt\Tag\GenericList($type);
 				for ($i = 0; $i < $length; $i++) {
 					if (feof($file)) {
 						break;
 					}
-					$out['value'][] = $this->readType($file, $type);
+					$out->push($this->readTag($file, $type));
 				}
 				return $out;
 			case TagType::TAG_COMPOUND:
-				$out = [];
+				$out = new \Nbt\Tag\CompoundTag();
 				while ($this->readIntoNode($file, $out));
 				return $out;
 			default:
