@@ -4,6 +4,7 @@ namespace Nbt\Tag;
 
 abstract class AbstractTag {
 
+	protected $name;
 	protected $value;
 
 	public function __construct($value) {
@@ -18,5 +19,11 @@ abstract class AbstractTag {
 		$this->value = $value;
 	}
 
-	public abstract function getType();
+	public function getName() {
+		return $this->name;
+	}
+
+	public function setName($name) {
+		$this->name = $name;
+	}
 }

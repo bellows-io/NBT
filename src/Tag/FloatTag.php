@@ -2,10 +2,4 @@
 
 namespace Nbt\Tag;
 
-class FloatTag extends AbstractTag {
-
-	public function getType() {
-		return TagType::TAG_FLOAT;
-	}
-
-}
+class FloatTag extends AbstractTag { }

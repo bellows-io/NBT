@@ -2,10 +2,4 @@
 
 namespace Nbt\Tag;
 
-class IntTag extends AbstractTag {
-
-	public function getType() {
-		return TagType::TAG_INT;
-	}
-
-}
+class IntTag extends AbstractTag { }

@@ -2,10 +2,4 @@
 
 namespace Nbt\Tag;
 
-class ShortTag extends AbstractTag {
-
-	public function getType() {
-		return TagType::TAG_SHORT;
-	}
-
-}
+class ShortTag extends AbstractTag { }

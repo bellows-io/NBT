@@ -2,7 +2,7 @@
 
 namespace Nbt\Tag;
 
-class GenericList extends AbstractCollectionTag {
+class ListTag extends AbstractCollectionTag {
 
 	protected $genericType;
 
@@ -16,14 +16,10 @@ class GenericList extends AbstractCollectionTag {
 	}
 
 	public function push(AbstractTag $value) {
-		if ($value->getType() != $this->genericType) {
+		if (get_class($value) != $this->genericType) {
 			throw new \Exception("Invalid type of value in list");
 		}
 		parent::push($value);
-	}
-
-	public function getType() {
-		return TagType::TAG_LIST;
 	}
 
 }
