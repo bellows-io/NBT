@@ -10,6 +10,7 @@ abstract class AbstractCollectionTag extends AbstractTag {
 
 	public function push(AbstractTag $value) {
 		$this->value[] = $value;
+		return $this;
 	}
 
 }

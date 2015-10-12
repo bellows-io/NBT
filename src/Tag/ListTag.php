@@ -19,7 +19,7 @@ class ListTag extends AbstractCollectionTag {
 		if (get_class($value) != $this->genericType) {
 			throw new \Exception("Invalid type of value in list");
 		}
-		parent::push($value);
+		return parent::push($value);
 	}
 
 }
