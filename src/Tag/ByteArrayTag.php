@@ -2,13 +2,13 @@
 
 namespace Nbt\Tag;
 
-class ByteArrayTag extends AbstractCollectionTag {
+class ByteArrayTag extends AbstractTag implements \Iterator {
 
-	public function push(AbstractTag $value) {
-		if (! ($value instanceof ByteTag)) {
-			throw new \Exception("Invalid type of value in list");
-		}
-		parent::push($value);
+	use IterableTagTrait;
+
+	public function push(ByteTag $value) {
+		$this->value[] = $value;
+		return $this;
 	}
 
 }

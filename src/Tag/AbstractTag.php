@@ -7,7 +7,7 @@ abstract class AbstractTag {
 	protected $name;
 	protected $value;
 
-	public function __construct($value, $name = null) {
+	public function __construct($value = null, $name = null) {
 		$this->value = $value;
 		$this->name = $name;
 	}

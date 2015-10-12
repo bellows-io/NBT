@@ -2,12 +2,14 @@
 
 namespace Nbt\Tag;
 
-class ListTag extends AbstractCollectionTag {
+class ListTag extends AbstractTag implements \Iterator {
+
+	use IterableTagTrait;
 
 	protected $genericType;
 
 	public function __construct($genericType) {
-		parent::__construct();
+		parent::__construct([]);
 		$this->genericType = $genericType;
 	}
 
@@ -19,7 +21,8 @@ class ListTag extends AbstractCollectionTag {
 		if (get_class($value) != $this->genericType) {
 			throw new \Exception("Invalid type of value in list");
 		}
-		return parent::push($value);
+		$this->value[] = $value;
+		return $this;
 	}
 
 }

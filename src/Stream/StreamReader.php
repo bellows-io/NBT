@@ -3,7 +3,6 @@
 namespace Nbt\Stream;
 
 
-use Nbt\Tag\AbstractCollectionTag;
 use Nbt\Tag\CompoundTag;
 
 use Nbt\Stream\TagType;

@@ -2,7 +2,9 @@
 
 namespace Nbt\Tag;
 
-class CompoundTag extends AbstractTag {
+class CompoundTag extends AbstractTag implements \Iterator {
+
+	use IterableTagTrait;
 
 	public function __construct() {
 		parent::__construct([]);
