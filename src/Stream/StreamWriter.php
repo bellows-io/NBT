@@ -77,7 +77,6 @@ class StreamWriter {
 				}
 				return false;
 			case TagType::TAG_STRING:
-				$value = utf8_encode($value);
 				$this->writeTagValueToStream(TagType::TAG_SHORT, strlen($value), $file);
 				return is_int(fwrite($file, $value));
 			case TagType::TAG_LIST:

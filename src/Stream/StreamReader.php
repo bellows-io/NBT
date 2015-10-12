@@ -95,7 +95,8 @@ class StreamReader {
 			if (!($length = $this->readTagDataFromStream($file, TagType::TAG_SHORT)->getValue())) {
 				return new \Nbt\Tag\StringTag("");
 			}
-			return new \Nbt\Tag\StringTag(utf8_decode(fread($file, $length)));
+
+			return new \Nbt\Tag\StringTag(fread($file, $length));
 		}
 		if ($tagType == TagType::TAG_LIST) {
 			$type   = $this->readTagDataFromStream($file, TagType::TAG_BYTE)->getValue();
