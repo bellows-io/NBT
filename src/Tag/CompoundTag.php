@@ -8,8 +8,21 @@ class CompoundTag extends AbstractTag {
 		parent::__construct([]);
 	}
 
-	public function set($name, AbstractTag $value) {
-		$this->value[$name] = $value;
+	public function add(AbstractTag $value) {
+		if (! $value->getName()) {
+			throw new \Exception("Cannot add tag with no name");
+		}
+		if (isset($this->value[$value->getName()])) {
+			throw new \Exception("CompoundTag already has a tag with name `".$value->getName()."`");
+		}
+		$this->value[$value->getName()] = $value;
+		return $this;
 	}
 
+	public function get($name) {
+		if (! isset($this->value[$name])) {
+			return null;
+		}
+		return $this->value[$name];
+	}
 }

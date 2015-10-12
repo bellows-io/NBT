@@ -112,7 +112,7 @@ class StreamReader {
 		if ($tagType == TagType::TAG_COMPOUND) {
 			$out = new \Nbt\Tag\CompoundTag();
 			while ($child = $this->readFullTagFromStream($file)) {
-				$out->set($child->getName(), $child);
+				$out->add($child);
 			}
 			return $out;
 		}
